@@ -1,0 +1,10 @@
+[build]
+command = ""
+publish = "."
+
+[functions]
+  node_bundler = "esbuild"
+
+[[edge_functions]]
+  path = "/api/price"
+  function = "price"

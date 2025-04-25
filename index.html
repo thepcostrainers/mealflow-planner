@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>MealFlow Planner</title>
+<style>
+:root{--brand:#8c6ef0;--accent:#ff9da7;--bg:#faf9ff;--text:#333;--fun:#f0ad4e;--whole:#5cb85c}
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,sans-serif}
+body{background:var(--bg);color:var(--text)}
+header{background:var(--brand);color:#fff;padding:1rem;text-align:center;font-weight:700}
+main{max-width:1140px;margin:auto;padding:1rem}
+.card{background:#fff;border-radius:1rem;box-shadow:0 4px 14px rgba(0,0,0,.06);padding:1.25rem;margin-bottom:1.5rem}
+label{display:block;margin:.55rem 0 .2rem;font-weight:600}
+input,select,textarea,button{font-family:inherit}
+input,select,textarea{width:100%;padding:.6rem;border:1px solid #ccc;border-radius:.5rem}
+button{background:var(--accent);color:#fff;border:none;border-radius:.6rem;padding:.6rem 1.1rem;font-weight:600;cursor:pointer;transition:.2s;font-size:.85rem}
+button:hover{filter:brightness(1.07)}
+.grid{display:grid;gap:1rem}
+@media(min-width:800px){.cols-2{grid-template-columns:repeat(2,1fr)}.cols-3{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<header>MealFlow Planner</header>
+<main>
+<section id="quiz" class="card">
+  <h2>Quick setup</h2>
+  <form id="qForm" class="grid cols-2">
+    <div class="cols-3" style="grid-column:1/-1">
+      <div><label>Units</label><select id="unitSel"><option value="metric">Metric</option><option value="imperial">Imperial</option></select></div>
+      <div><label>Servings</label><input id="servings" type="number" min="1" max="6" value="1"></div>
+      <div><label>Budget $/week</label><input id="budget" type="number"></div>
+    </div>
+    <div><label id="hLabel">Height (cm)</label><input id="height" type="number" required></div>
+    <div><label id="wLabel">Weight (kg)</label><input id="weight" type="number" required></div>
+    <div><label id="gwLabel">Goal weight (kg)</label><input id="goalW" type="number" required></div>
+    <div><label>Country</label><select id="country"><option value="au">Australia</option><option value="uk">United Kingdom</option><option value="de">Germany</option><option value="us">USA</option></select></div>
+    <div><label>Cycle day</label><input id="cycleDay" type="number" min="1" max="40" value="1"></div>
+    <div><label>Cook‑time max</label><select id="cookTime"><option value="15">≤15</option><option value="30">≤30</option><option value="60">≤60</option></select></div>
+    <div style="grid-column:1/-1"><label>Equipment</label><select id="gear" multiple size="4"><option value="airfryer">Air-fryer</option><option value="oven">Oven</option><option value="slowcooker">Slow-cooker</option><option value="pressure">Instant Pot</option></select></div>
+    <div style="grid-column:1/-1"><label>Leftovers</label><textarea id="leftovers" rows="2"></textarea></div>
+    <div style="grid-column:1/-1"><button type="submit">Generate plan →</button></div>
+  </form>
+</section>
+<section id="plan" class="card" style="display:none"></section>
+<section id="groceries" class="card" style="display:none"></section>
+</main>
+<script>
+const $=q=>document.querySelector(q);
+$('#unitSel').onchange=e=>{const m=e.target.value==='metric';$('#hLabel').textContent=m?'Height (cm)':'Height (in)';$('#wLabel').textContent=m?'Weight (kg)':'Weight (lbs)';$('#gwLabel').textContent=m?'Goal weight (kg)':'Goal weight (lbs)';};
+$('#qForm').onsubmit= async e=>{
+ e.preventDefault();
+ const params=new URLSearchParams({item:'kale',country:$('#country').value});
+ const price=await fetch('/api/price?'+params).then(r=>r.json()).catch(()=>({price:'n/a'}));
+ $('#plan').style.display='block';
+ $('#plan').textContent='Demo plan – cheapest kale price: $'+price.price;
+};
+</script>
+</body>
+</html>
